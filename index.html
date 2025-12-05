@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ast">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exame d'asturianu - Nivel avanzáu</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: light dark;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      background: #020617;
+      color: #0f172a;
+    }
+
+    .app-shell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1d4ed8, #020617);
+      padding: 12px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.98);
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      padding: 20px 18px 22px;
+      display: flex;
+      flex-direction: column;
+      max-height: 700px;
+    }
+
+    @media (min-height: 720px) {
+      .card {
+        margin: 12px 0;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .card {
+        background: rgba(15, 23, 42, 0.98);
+        color: #e5e7eb;
+      }
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      margin-top: 0;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 0.7rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .subtitle {
+        color: #9ca3af;
+      }
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 8px 10px;
+      border-radius: 14px;
+      font-size: 0.86rem;
+      margin-bottom: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .info-box {
+        background: #020617;
+        border-color: #60a5fa;
+      }
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .question-number {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #1d4ed8;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .question-number {
+        color: #93c5fd;
+      }
+    }
+
+    .progress {
+      font-size: 0.82rem;
+      color: #6b7280;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .progress {
+        color: #9ca3af;
+      }
+    }
+
+    .question-text {
+      font-size: 0.96rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .options {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 10px 0;
+    }
+
+    .options li {
+      margin-bottom: 6px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.94rem;
+    }
+
+    .option-label input[type="checkbox"] {
+      margin-top: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      font-size: 0.94rem;
+      padding: 9px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .small-muted {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .scroll-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .results-title {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .score-highlight {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .score-highlight span {
+      color: #16a34a;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .score-highlight span {
+        color: #22c55e;
+      }
+    }
+
+    .feedback-message {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .per-question {
+      margin-top: 8px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 8px;
+      font-size: 0.9rem;
+      max-height: 210px;
+      overflow-y: auto;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .per-question {
+        border-color: #1f2937;
+      }
+    }
+
+    .per-question-item {
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .footer-note {
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="card">
+      <div class="main-content">
+        <!-- PANTALLA INICIAL -->
+        <div id="start-screen" style="display:block;">
+          <h1>Exame d'asturianu – Nivel avanzáu</h1>
+          <p class="subtitle">
+            Test d'eleición múltiple con 10 preguntes. La nota final ye sobre 10.
+          </p>
+          <div class="info-box">
+            <strong>¿En qué consiste?</strong>
+            <ul>
+              <li>Vas contestar a 10 preguntes d'asturianu (vocabulariu y gramática).</li>
+              <li>En caúna pue haber <strong>una o más</strong> respuestes correutes.</li>
+              <li>Al final verás la nota total y la puntuación de cada pregunta, pero ensin ver cuáles yeren les correutes.</li>
+            </ul>
+            <strong>Instrucciones:</strong>
+            <ul>
+              <li>Ves una sola pregunta cada vegada.</li>
+              <li>Marca toles opciones que consideres <em>correutes</em>.</li>
+              <li>Vas avanzando de pregunta en pregunta hasta la última.</li>
+              <li>Na última pantalla verás la to nota final.</li>
+              <li>La nota total ye sobre 10 (máx. 1 puntu por pregunta).</li>
+            </ul>
+            <p style="margin: 0; font-size: 0.86rem;">
+              Cuando teas preparáu, calca en <strong>«Entamar l'exame»</strong>.
+            </p>
+          </div>
+          <div class="buttons" style="justify-content:flex-start;">
+            <button type="button" class="btn-primary" id="start-button">Entamar l'exame</button>
+          </div>
+        </div>
+
+        <!-- PANTALLA EXAME -->
+        <div id="quiz-screen" class="scroll-area" style="display:none;">
+          <div id="quiz-container">
+            <div class="question-header">
+              <div class="question-number" id="question-number"></div>
+              <div class="progress" id="progress"></div>
+            </div>
+            <div class="question-text" id="question-text"></div>
+            <ul class="options" id="options-list"></ul>
+            <div class="buttons">
+              <button type="button" class="btn-primary" id="next-button">Siguiente</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANTALLA RESULTAOS -->
+        <div id="results-screen" class="scroll-area" style="display:none;">
+          <div id="results-container">
+            <div class="results-title">Resultaos del exame</div>
+            <div class="score-highlight">
+              La to nota total ye: <span id="total-score"></span> / 10
+            </div>
+            <div class="feedback-message" id="feedback-message"></div>
+            <div id="extra-info" class="small-muted"></div>
+            <div class="per-question" id="per-question-container"></div>
+
+            <!-- Botón pa repetir -->
+            <div class="buttons" style="justify-content:flex-start; margin-top: 10px;">
+              <button type="button" class="btn-primary" id="restart-button">
+                Volver a entamar l'exame
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="small-muted footer-note">
+        Esti test ye anónimu. Solo se ve la nota na pantalla; nun se recueyen datos personales.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 1,
+        title: "Escueye les opciones correutes sobre l'usu del plural masculín acabáu en -es.",
+        options: [
+          "Úsase pa formar el plural de pallabres acabáes en -ín (ex.: «cantarín → cantariños»).",
+          "Úsase en sustantivos acabados en -u: «perru → perres».",
+          "Úsase nel plural de pallabres masculines acabáes en -e: «home → homes».",
+          "Úsase tamién en ciertos masculinos acabáos en consonante: «tren → trenes»."
+        ],
+        correct: [2, 3]
+      },
+      {
+        id: 2,
+        title: "¿Cuál(es) d'estes formes verbales son correutes en asturianu?",
+        options: [
+          "Yo tuviere",
+          "Nosotros tuvimos",
+          "Tuvi",
+          "Tuviemos"
+        ],
+        correct: [0, 2, 3]
+      },
+      {
+        id: 3,
+        title: "Identifica les frases con usu correutu del pronome enclíticu.",
+        options: [
+          "Díxomelu ayeri.",
+          "Quiero dicí-ylo mañana.",
+          "Nun sé si facerlu agora.",
+          "Ellos lo ficieron."
+        ],
+        correct: [0, 1, 2]
+      },
+      {
+        id: 4,
+        title: "¿Qué opción(es) recueyen un significáu correutu del verbu «falar»?",
+        options: [
+          "Conversar, falar con alguien.",
+          "Referise a una cosa con cuidos especiales.",
+          "Emitir soníu(s) ensin articular pallabres.",
+          "Escribir perfolio de tema lliterariu."
+        ],
+        correct: [0]
+      },
+      {
+        id: 5,
+        title: "Dientro del asturianu, ¿cuál(es) d'estes formes tán bien declináes?",
+        options: [
+          "La mio casa",
+          "El so llibru",
+          "La to hermana",
+          "Les nuestres fiestes"
+        ],
+        correct: [1, 2, 3]
+      },
+      {
+        id: 6,
+        title: "¿Qué frase(s) presenten un usu correutu del pretéritu imperfectu?",
+        options: [
+          "Cuando yera neñu, xugaba tolos díes nel prau.",
+          "Ayer yera en Xixón.",
+          "Siempre comía fabes cuando visitaba a la mio güela.",
+          "El martes pasáu xugaba un partíu."
+        ],
+        correct: [0, 2]
+      },
+      {
+        id: 7,
+        title: "Escueye les opciones que representen un aumentativu correutu.",
+        options: [
+          "Casona",
+          "Perrazu",
+          "Gatín",
+          "Farru"
+        ],
+        correct: [0, 1]
+      },
+      {
+        id: 8,
+        title: "¿Cuál(es) d'estes pallabres son sinónimos correutos de «ruxir» en asturianu?",
+        options: [
+          "Bruñar",
+          "Arramplar",
+          "Tronar",
+          "«Ruxir» ye autu-sinónimu (autología)."
+        ],
+        correct: [0, 2]
+      },
+      {
+        id: 9,
+        title: "Respectu al lleísmu en asturianu, marca les afirmaciones correutes.",
+        options: [
+          "L'asturianu acepta «lle» como pronome d'obxetu direutu humano.",
+          "«Vilu» ye incorrectu; la forma normativa ye «vi-y».",
+          "«La vi» (a una muyer) ye forma válida.",
+          "El pronomu «ye» pue funcionar como obxetu direutu o indireutu."
+        ],
+        correct: [0, 2, 3]
+      },
+      {
+        id: 10,
+        title: "¿Qué opción(es) contienen un adverbio propiu del asturianu?",
+        options: [
+          "D'arréu",
+          "Demasiao",
+          "Agora mesmo",
+          "Ensin"
+        ],
+        correct: [0, 3]
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    const perQuestionScores = [];
+
+    const startScreenEl    = document.getElementById("start-screen");
+    const quizScreenEl     = document.getElementById("quiz-screen");
+    const resultsScreenEl  = document.getElementById("results-screen");
+
+    const startButtonEl    = document.getElementById("start-button");
+    const nextButtonEl     = document.getElementById("next-button");
+    const restartButtonEl  = document.getElementById("restart-button");
+
+    const questionNumberEl = document.getElementById("question-number");
+    const progressEl       = document.getElementById("progress");
+    const questionTextEl   = document.getElementById("question-text");
+    const optionsListEl    = document.getElementById("options-list");
+
+    const totalScoreEl           = document.getElementById("total-score");
+    const perQuestionContainerEl = document.getElementById("per-question-container");
+    const extraInfoEl            = document.getElementById("extra-info");
+    const feedbackMessageEl      = document.getElementById("feedback-message");
+
+    function scoreQuestion(question, selectedIndices) {
+      const totalCorrect   = question.correct.length;
+      const totalOptions   = question.options.length;
+      const totalIncorrect = totalOptions - totalCorrect;
+
+      let score = 0;
+
+      selectedIndices.forEach((index) => {
+        if (question.correct.includes(index)) {
+          score += 1 / totalCorrect;
+        } else {
+          if (totalIncorrect > 0) {
+            score -= 1 / totalIncorrect;
+          }
+        }
+      });
+
+      if (score < 0) score = 0;
+      if (score > 1) score = 1;
+      return score;
+    }
+
+    function formatScore(num, decimals = 2) {
+      return num.toFixed(decimals).replace(".", ",");
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestionIndex];
+
+      questionNumberEl.textContent = `Pregunta ${currentQuestionIndex + 1}`;
+      progressEl.textContent       = `${currentQuestionIndex + 1} / ${questions.length}`;
+      questionTextEl.textContent   = q.title;
+
+      optionsListEl.innerHTML = "";
+
+      q.options.forEach((optionText, idx) => {
+        const li    = document.createElement("li");
+        const label = document.createElement("label");
+        label.className = "option-label";
+
+        const checkbox = document.createElement("input");
+        checkbox.type  = "checkbox";
+        checkbox.value = idx;
+
+        const span = document.createElement("span");
+        span.textContent = String.fromCharCode(65 + idx) + ". " + optionText;
+
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        li.appendChild(label);
+        optionsListEl.appendChild(li);
+      });
+
+      nextButtonEl.textContent =
+        currentQuestionIndex === questions.length - 1
+          ? "Finar l'exame"
+          : "Siguiente";
+    }
+
+    function getFeedbackMessage(scoreOver10) {
+      if (scoreOver10 < 3) {
+        return "Nivel entamu. Tienes munchu márxen pa siguir deprendiendo, pero esi ye'l primer pasu. ¡Ánimo!";
+      } else if (scoreOver10 < 6) {
+        return "Nivel mediu baxu. Controles dalgunos aspeutos, pero entá hai bastantes puntos a reforzar.";
+      } else if (scoreOver10 < 8) {
+        return "Bon nivel. Domines gran parte del conteníu d'esti teste y tienes una base sólida d'asturianu.";
+      } else if (scoreOver10 < 9.5) {
+        return "Nivel altu. Fai que se note: tienes un dominiu mui bonu del asturianu nesi ámbitu.";
+      } else {
+        return "Nivel peraltu / casi nativu. El resultáu ye espléndidu, control totalmente llingüísticu nestes cuestiones.";
+      }
+    }
+
+    function showResults() {
+      quizScreenEl.style.display    = "none";
+      resultsScreenEl.style.display = "flex";
+
+      const totalRaw   = perQuestionScores.reduce((acc, s) => acc + s, 0);
+      const totalOver10 = totalRaw;
+
+      totalScoreEl.textContent      = formatScore(totalOver10, 2);
+      feedbackMessageEl.textContent = getFeedbackMessage(totalOver10);
+
+      extraInfoEl.textContent =
+        "Ca pregunta puntúa ente 0 y 1. La nota total ye la suma de toles preguntes (máx. 10).";
+
+      perQuestionContainerEl.innerHTML = "";
+      questions.forEach((q, index) => {
+        const score = perQuestionScores[index] ?? 0;
+        const line  = document.createElement("div");
+        line.className = "per-question-item";
+        line.textContent = `${index + 1}: ${q.title} = ${formatScore(score, 2)}`;
+        perQuestionContainerEl.appendChild(line);
+      });
+    }
+
+    // Entamar
+    startButtonEl.addEventListener("click", () => {
+      startScreenEl.style.display   = "none";
+      resultsScreenEl.style.display = "none";
+      quizScreenEl.style.display    = "flex";
+
+      currentQuestionIndex = 0;
+      perQuestionScores.length = 0;
+      renderQuestion();
+    });
+
+    // Siguiente / Finar
+    nextButtonEl.addEventListener("click", () => {
+      const checkboxes = optionsListEl.querySelectorAll("input[type='checkbox']");
+      const selectedIndices = [];
+      checkboxes.forEach((cb, idx) => {
+        if (cb.checked) selectedIndices.push(idx);
+      });
+
+      if (selectedIndices.length === 0) {
+        const proceed = window.confirm(
+          "Nun marcaste nenguna opción nesta pregunta. ¿Quies siguir igual? (La puntuación será 0 nesta pregunta)"
+        );
+        if (!proceed) return;
+      }
+
+      const currentQuestion = questions[currentQuestionIndex];
+      const qScore = scoreQuestion(currentQuestion, selectedIndices);
+      perQuestionScores[currentQuestionIndex] = qScore;
+
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex += 1;
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    });
+
+    // Volver a entamar
+    restartButtonEl.addEventListener("click", () => {
+      // volvemos a la intro
+      resultsScreenEl.style.display = "none";
+      startScreenEl.style.display   = "block";
+    });
+  </script>
+</body>
+</html>
