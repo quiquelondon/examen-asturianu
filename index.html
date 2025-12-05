@@ -10,37 +10,40 @@
       color-scheme: light dark;
     }
 
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      background: #020617;
-      color: #0f172a;
+    html, body {
+      height: 100%;
     }
 
     .app-shell {
       flex: 1;
+      height: 100%;
+      padding: 0;
       display: flex;
-      align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at top, #1d4ed8, #020617);
-      padding: 12px;
+      align-items: stretch;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.98);
       width: 100%;
       max-width: 480px;
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-      padding: 20px 18px 22px;
+      height: 100%;
+      border-radius: 0;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
-      max-height: 700px;
+      padding: 16px;
     }
+
+    /* Animación entre pantalles */
+    .fade {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .fade.show {
+      opacity: 1;
+    }
+
 
     @media (min-height: 720px) {
       .card {
@@ -299,9 +302,16 @@
             </div>
             <div class="question-text" id="question-text"></div>
             <ul class="options" id="options-list"></ul>
-            <div class="buttons">
-              <button type="button" class="btn-primary" id="next-button">Siguiente</button>
+            <div class="buttons" style="justify-content: space-between; width:100%;">
+              <button type="button" class="btn-primary" id="back-button" style="background:#64748b;">
+                Atrás
+              </button>
+
+              <button type="button" class="btn-primary" id="next-button">
+                Siguiente
+              </button>
             </div>
+
           </div>
         </div>
 
@@ -448,6 +458,7 @@
 
     let currentQuestionIndex = 0;
     const perQuestionScores = [];
+    const userAnswers = {}; // Guarda arrays de opciones seleccionadas por cada pregunta
 
     const startScreenEl    = document.getElementById("start-screen");
     const quizScreenEl     = document.getElementById("quiz-screen");
@@ -455,6 +466,7 @@
 
     const startButtonEl    = document.getElementById("start-button");
     const nextButtonEl     = document.getElementById("next-button");
+    const backButtonEl     = document.getElementById("back-button");
     const restartButtonEl  = document.getElementById("restart-button");
 
     const questionNumberEl = document.getElementById("question-number");
@@ -496,20 +508,29 @@
     function renderQuestion() {
       const q = questions[currentQuestionIndex];
 
+      // Animación fade
+      quizScreenEl.classList.remove("show");
+      setTimeout(() => quizScreenEl.classList.add("show"), 20);
+
       questionNumberEl.textContent = `Pregunta ${currentQuestionIndex + 1}`;
-      progressEl.textContent       = `${currentQuestionIndex + 1} / ${questions.length}`;
-      questionTextEl.textContent   = q.title;
+      progressEl.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+      questionTextEl.textContent = q.title;
 
       optionsListEl.innerHTML = "";
 
       q.options.forEach((optionText, idx) => {
-        const li    = document.createElement("li");
+        const li = document.createElement("li");
         const label = document.createElement("label");
         label.className = "option-label";
 
         const checkbox = document.createElement("input");
-        checkbox.type  = "checkbox";
+        checkbox.type = "checkbox";
         checkbox.value = idx;
+
+        // Restaurar respuestas si existen
+        if (userAnswers[currentQuestionIndex]?.includes(idx)) {
+          checkbox.checked = true;
+        }
 
         const span = document.createElement("span");
         span.textContent = String.fromCharCode(65 + idx) + ". " + optionText;
@@ -520,10 +541,15 @@
         optionsListEl.appendChild(li);
       });
 
+      // Botón siguiente / final
       nextButtonEl.textContent =
         currentQuestionIndex === questions.length - 1
           ? "Finar l'exame"
           : "Siguiente";
+
+      // Mostrar/ocultar botón Atrás
+      backButtonEl.style.visibility =
+        currentQuestionIndex === 0 ? "hidden" : "visible";
     }
 
     function getFeedbackMessage(scoreOver10) {
@@ -578,9 +604,13 @@
     nextButtonEl.addEventListener("click", () => {
       const checkboxes = optionsListEl.querySelectorAll("input[type='checkbox']");
       const selectedIndices = [];
+
       checkboxes.forEach((cb, idx) => {
         if (cb.checked) selectedIndices.push(idx);
       });
+
+      // Guardar selecciones
+      userAnswers[currentQuestionIndex] = selectedIndices;
 
       if (selectedIndices.length === 0) {
         const proceed = window.confirm(
@@ -599,6 +629,13 @@
       } else {
         showResults();
       }
+    });
+
+    backButtonEl.addEventListener("click", () => {
+      if (currentQuestionIndex === 0) return;
+
+      currentQuestionIndex -= 1;
+      renderQuestion();
     });
 
     // Volver a entamar
